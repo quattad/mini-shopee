@@ -2,9 +2,9 @@ package crud
 
 import (
 	"errors"
-	"github/quattad/mini-shopee/products-service/models"
-	"github/quattad/mini-shopee/products-service/src/repository"
-	"github/quattad/mini-shopee/products-service/src/utils/channels"
+	"github/quattad/mini-shopee/products-service/src/api/channels"
+	"github/quattad/mini-shopee/products-service/src/api/models"
+	"github/quattad/mini-shopee/products-service/src/api/repository"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -34,8 +34,7 @@ func (r *RepositoryProductsCrud) Save(product models.Product) (models.Product, e
 	done := make(chan bool)
 
 	go func(ch chan<- bool) {
-		defer close(ch)
-		err := r.db.Debug().Model(&models.Product{}).Create(&product).Error
+		err = r.db.Debug().Model(&models.Product{}).Create(&product).Error
 
 		if err != nil {
 			ch <- false
@@ -43,6 +42,7 @@ func (r *RepositoryProductsCrud) Save(product models.Product) (models.Product, e
 		}
 
 		ch <- true
+		close(ch)
 	}(done)
 
 	if channels.OK(done) {
@@ -61,7 +61,7 @@ func (r *RepositoryProductsCrud) FindAll() ([]models.Product, error) {
 	products := []models.Product{}
 
 	go func(ch chan<- bool) {
-		err := r.db.Debug().Model(&models.Product{}).Limit(100).Find(&products).Error
+		err = r.db.Debug().Model(&models.Product{}).Limit(100).Find(&products).Error
 
 		if err != nil {
 			ch <- false
@@ -127,9 +127,10 @@ func (r *RepositoryProductsCrud) Update(pid uint32, product models.Product) (int
 			},
 		)
 
+		ch <- true
 	}(done)
 
-	if rs.Error != nil {
+	if !channels.OK(done) || rs.Error != nil {
 		return 0, rs.Error
 	}
 	return rs.RowsAffected, nil

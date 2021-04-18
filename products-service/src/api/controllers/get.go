@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"github/quattad/mini-shopee/products-service/src/api/config"
+	"github/quattad/mini-shopee/products-service/src/api/db"
+	"github/quattad/mini-shopee/products-service/src/api/repository"
+	"github/quattad/mini-shopee/products-service/src/api/repository/crud"
 	"github/quattad/mini-shopee/products-service/src/api/responses"
-	"github/quattad/mini-shopee/products-service/src/config"
-	"github/quattad/mini-shopee/products-service/src/db"
-	"github/quattad/mini-shopee/products-service/src/repository"
-	"github/quattad/mini-shopee/products-service/src/repository/crud"
 	"net/http"
 	"strconv"
 
@@ -18,6 +18,8 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 	}
+
+	defer db.Close()
 
 	repo := crud.NewRepositoryProductsCrud(db)
 
@@ -48,6 +50,8 @@ func GetProduct(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 	}
+
+	defer db.Close()
 
 	repo := crud.NewRepositoryProductsCrud(db)
 

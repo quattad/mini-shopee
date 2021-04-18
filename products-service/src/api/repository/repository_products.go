@@ -1,6 +1,6 @@
 package repository
 
-import "github/quattad/mini-shopee/products-service/models"
+import "github/quattad/mini-shopee/products-service/src/api/models"
 
 type ProductRepository interface {
 	Save(product models.Product) (models.Product, error)

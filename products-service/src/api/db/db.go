@@ -1,6 +1,9 @@
 package db
 
-import "github.com/jinzhu/gorm"
+import (
+	_ "github.com/go-sql-driver/mysql" // database/sql package must be used together with db driver. import only for side effects
+	"github.com/jinzhu/gorm"
+)
 
 var (
 	DBService dbServiceInterface

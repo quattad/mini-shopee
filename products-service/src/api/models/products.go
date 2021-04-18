@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"html"
 	"strings"
 	"time"
 )
@@ -17,23 +16,22 @@ type Product struct {
 }
 
 type productsServiceInterface interface {
-	Prepare() *Product
+	Prepare()
 	Validate(string) error
 }
 
 // Prepare removes any whitespaces from fields except for Description
-func (p *Product) Prepare() *Product {
+func (p *Product) Prepare() {
 	p.ID = 0
-	p.Name = html.EscapeString(strings.TrimSpace(p.Name))
 	p.CreatedAt = time.Now()
 	p.UpdatedAt = time.Now()
-	return p
-
 }
 
 // Validate acts as a sanitizer for fields
 func (p *Product) Validate(action string) error {
-	switch action {
+	var err error
+
+	switch strings.ToLower(action) {
 	case "update":
 		if p.Name == "" {
 			return errors.New("Product must have defined property 'name'")
@@ -46,9 +44,6 @@ func (p *Product) Validate(action string) error {
 		if p.Price == 0 {
 			return errors.New("Product cannot be 0 for defined property 'price'")
 		}
-
-		return nil
-
 	default:
 		if p.Name == "" {
 			return errors.New("Product must have defined property 'name'")
@@ -61,8 +56,7 @@ func (p *Product) Validate(action string) error {
 		if p.Price == 0 {
 			return errors.New("Product cannot be 0 for defined property 'price'")
 		}
-
-		return nil
-
 	}
+	err = nil
+	return err
 }

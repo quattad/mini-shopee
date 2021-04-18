@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"fmt"
+	"github/quattad/mini-shopee/products-service/src/api/config"
+	"github/quattad/mini-shopee/products-service/src/api/db"
+	"github/quattad/mini-shopee/products-service/src/api/repository"
+	"github/quattad/mini-shopee/products-service/src/api/repository/crud"
 	"github/quattad/mini-shopee/products-service/src/api/responses"
-	"github/quattad/mini-shopee/products-service/src/config"
-	"github/quattad/mini-shopee/products-service/src/db"
-	"github/quattad/mini-shopee/products-service/src/repository"
-	"github/quattad/mini-shopee/products-service/src/repository/crud"
 	"net/http"
 	"strconv"
 
@@ -21,7 +21,7 @@ func DeleteProduct(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 	}
 
-	db, err := db.DBService.Connect(config.DBURL, config.DBDRIVER)
+	db, err := db.DBService.Connect(config.DBDRIVER, config.DBURL)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)

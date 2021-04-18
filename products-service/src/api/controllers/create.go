@@ -3,12 +3,12 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"github/quattad/mini-shopee/products-service/models"
+	"github/quattad/mini-shopee/products-service/src/api/config"
+	"github/quattad/mini-shopee/products-service/src/api/db"
+	"github/quattad/mini-shopee/products-service/src/api/models"
+	"github/quattad/mini-shopee/products-service/src/api/repository"
+	"github/quattad/mini-shopee/products-service/src/api/repository/crud"
 	"github/quattad/mini-shopee/products-service/src/api/responses"
-	"github/quattad/mini-shopee/products-service/src/config"
-	"github/quattad/mini-shopee/products-service/src/db"
-	"github/quattad/mini-shopee/products-service/src/repository"
-	"github/quattad/mini-shopee/products-service/src/repository/crud"
 	"io/ioutil"
 	"net/http"
 )
@@ -19,25 +19,29 @@ func CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
 	}
 
 	err = json.Unmarshal(body, &product)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
 	}
 
 	product.Prepare()
-	product.Validate("")
+	err = product.Validate("")
 
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
 	}
 
 	db, err := db.DBService.Connect(config.DBDRIVER, config.DBURL)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	repo := crud.NewRepositoryProductsCrud(db)
