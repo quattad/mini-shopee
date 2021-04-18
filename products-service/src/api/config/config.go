@@ -24,10 +24,15 @@ var SECRETKEY []byte
 func Load() {
 	var err error
 
-	err = godotenv.Load(os.ExpandEnv("$GOPATH/src/github.com/quattad/mini-shopee/products-service/env/.env"))
+	if os.Getenv("ENV_SOURCE") != "docker" {
+		fmt.Println("Loading envs from .env ... ")
+		err = godotenv.Load(os.ExpandEnv("$GOPATH/src/github.com/quattad/mini-shopee/products-service/src/api/env/.env"))
 
-	if err != nil {
-		log.Fatal(err)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		fmt.Println("Docker env detected ... ")
 	}
 
 	PORT, err = strconv.Atoi((os.Getenv("PORT")))
@@ -38,6 +43,6 @@ func Load() {
 	}
 
 	DBDRIVER = os.Getenv("DB_DRIVER")
-	DBURL = fmt.Sprintf("%s:%s@/%s?charset=utf8&parseTime=True&loc=Local", os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"))
+	DBURL = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOSTNAME"), os.Getenv("DB_PORT"), os.Getenv("DB_NAME"))
 	SECRETKEY = []byte(os.Getenv("API_SECRET"))
 }

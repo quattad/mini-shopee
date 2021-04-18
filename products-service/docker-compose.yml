@@ -1,0 +1,26 @@
+
+version: "3.9"
+services:
+    db:
+        image: mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: "Testpassword123!"
+            MYSQL_DATABASE: "products_service"
+            MYSQL_USER: "productsadm"
+            MYSQL_PASSWORD: "Passwordvpc1!"
+    products:
+        build: .
+        restart: always
+        ports:
+            - "8000:8000"
+        depends_on:
+            - "db"
+        environment:
+            ENV_SOURCE: docker
+            DB_DRIVER: mysql
+            DB_USER: productsadm
+            DB_PASSWORD: Passwordvpc1!
+            DB_HOSTNAME: db
+            DB_PORT: 3306
+            DB_NAME: products_service
